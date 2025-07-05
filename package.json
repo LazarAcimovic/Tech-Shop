@@ -1,0 +1,22 @@
+{
+  "name": "pc_shop",
+  "version": "1.0.0",
+  "description": "Faculty project",
+  "type": "module",
+  "license": "MIT",
+  "author": "Lazar Acimovic IT35/2021",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start  --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
