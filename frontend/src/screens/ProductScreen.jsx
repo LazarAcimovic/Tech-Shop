@@ -47,7 +47,7 @@ const ProductScreen = () => {
             <ListGroup.Item>
               <Rating
                 value={product.rating}
-                text={`${product.numReviews} reviews`}
+                text={`${product.num_reviews} reviews`}
               />
             </ListGroup.Item>
             <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
@@ -71,7 +71,7 @@ const ProductScreen = () => {
                   <Col>Status:</Col>
                   <Col>
                     <strong>
-                      {product.countInStock > 0 ? "In Stock" : "Out Of Stock"}
+                      {product.count_in_stock > 0 ? "In Stock" : "Out Of Stock"}
                     </strong>
                   </Col>
                 </Row>
@@ -81,7 +81,7 @@ const ProductScreen = () => {
                 <Button
                   className="btn-block"
                   type="button"
-                  disabled={product.countInStock === 0}
+                  disabled={product.count_in_stock === 0}
                 >
                   Add To Cart
                 </Button>

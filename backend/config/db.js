@@ -10,21 +10,27 @@ import mysql from "mysql2/promise";
 //   database: Tech_Shop,
 // });
 
-const connectDB = async () => {
-  try {
-    const connection = await mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      port: 3306,
-      database: "tech_shop",
-    });
+let connection;
 
-    console.log(`MySQL Connected...`);
-    return connection;
-  } catch (error) {
-    console.error("Connection failed:", error.message);
-    process.exit(1);
+const connectDB = async () => {
+  if (!connection) {
+    try {
+      connection = await mysql.createConnection({
+        host: "localhost",
+        user: "root",
+
+        database: "tech_shop",
+        port: 3306,
+      });
+
+      console.log("✅ MySQL connected...");
+    } catch (error) {
+      console.error(" Connection failed:", error.message);
+      process.exit(1);
+    }
   }
+
+  return connection;
 };
 
 export default connectDB;
