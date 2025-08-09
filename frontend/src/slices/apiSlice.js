@@ -9,5 +9,5 @@ const baseQuery = fetchBaseQuery({ baseUrl: BASE_URL });
 export const apiSlice = createApi({
   baseQuery,
   tagTypes: ["user", "product", "orders", "orderitem", "review"],
-  endpoints: () => ({}), //{} => nema definisanih API ruta ka beku
+  endpoints: () => ({}), //inicijalno prazno, indirektno injektovanje iz drugih fajlova
 });

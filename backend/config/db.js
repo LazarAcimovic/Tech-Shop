@@ -21,6 +21,7 @@ const connectDB = async () => {
 
         database: "tech_shop",
         port: 3306,
+        charset: "utf8mb4",
       });
 
       console.log("✅ MySQL connected...");
