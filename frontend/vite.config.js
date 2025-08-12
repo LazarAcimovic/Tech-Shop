@@ -10,6 +10,10 @@ export default defineConfig({
         target: "http://localhost:5000",
         changeOrigin: true,
       },
+      "/create-checkout-session": {
+        target: "http://localhost:5000", // gde ti je backend
+        changeOrigin: true,
+      },
     },
   },
 });
