@@ -39,19 +39,46 @@ app.use(cookieParser());
     app.use("/api/orders", orderRoutes);
 
     app.post("/create-checkout-session", async (req, res) => {
-      const { products } = req.body;
+      // const { products, order_id, taxPrice, shippingPrice } = req.body;
+      const { products, order_id } = req.body;
+      const cartItems = products.cartItems;
+      const { shippingPrice, taxPrice } = products;
 
-      const lineItems = products.map((product) => ({
+      console.log(products, order_id, shippingPrice, taxPrice);
+
+      const lineItems = cartItems.map((item) => ({
         price_data: {
           currency: "usd",
           product_data: {
-            name: product.name,
-            images: [`http://localhost:5000${product.image}`], // apsolutni URL
+            name: item.name,
+            images: [`http://localhost:5000${item.image}`], // apsolutni URL
           },
-          unit_amount: Math.round(product.price * 100),
+          unit_amount: Math.round(item.price * 100),
         },
-        quantity: product.qty,
+        quantity: item.qty,
       }));
+
+      if (shippingPrice > 0) {
+        lineItems.push({
+          price_data: {
+            currency: "usd",
+            product_data: { name: "Shipping" },
+            unit_amount: Math.round(shippingPrice * 100),
+          },
+          quantity: 1,
+        });
+      }
+
+      if (taxPrice > 0) {
+        lineItems.push({
+          price_data: {
+            currency: "usd",
+            product_data: { name: "Tax" },
+            unit_amount: Math.round(taxPrice * 100),
+          },
+          quantity: 1,
+        });
+      }
 
       //kreiramo checkout sesiju
       //vraća objekat koji stripe vraća kada se kreira checkout sesija
@@ -60,8 +87,7 @@ app.use(cookieParser());
         payment_method_types: ["card"],
         line_items: lineItems,
         mode: "payment",
-        success_url:
-          "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
+        success_url: `http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order_id}`,
         cancel_url: "http://localhost:5173/cancel",
       });
 

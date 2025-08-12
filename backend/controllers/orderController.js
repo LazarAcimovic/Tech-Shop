@@ -209,7 +209,21 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
-  res.send("update order to paid");
+  // Ažuriranje narudžbine
+  const [updateResult] = await db.execute(
+    `UPDATE Orders
+     SET is_paid = TRUE,
+         paid_at = NOW()
+     WHERE order_id = ?`,
+    [req.params.id]
+  );
+
+  if (updateResult.affectedRows === 0) {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+
+  res.status(200).json({ message: "Order updated to paid" });
 });
 
 // @desc    Update order to delivered

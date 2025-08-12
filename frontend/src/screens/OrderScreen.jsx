@@ -12,15 +12,10 @@ import { clearCartItems } from "../slices/cartSlice";
 const OrderScreen = () => {
   const { id: order_id } = useParams();
 
-  const {
-    data: order,
-    refetch,
-    isLoading,
-    error,
-  } = useGetOrderDetailsQuery(order_id);
+  const { data: order, isLoading, error } = useGetOrderDetailsQuery(order_id);
 
   const { userInfo } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.cart);
+  const cartItems = useSelector((state) => state.cart);
   console.log(cartItems);
 
   const dispatch = useDispatch();
@@ -32,7 +27,9 @@ const OrderScreen = () => {
 
     const body = {
       products: cartItems,
+      order_id: order_id,
     };
+    console.log(body);
 
     const headers = {
       "Content-Type": "application/json",
@@ -51,7 +48,7 @@ const OrderScreen = () => {
       sessionId: session.id,
     });
 
-    if (await result.error) {
+    if (result.error) {
       console.log(result.error);
       return;
     }

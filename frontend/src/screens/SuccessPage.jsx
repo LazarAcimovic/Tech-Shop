@@ -1,6 +1,28 @@
 import React from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { clearCartItems } from "../slices/cartSlice";
+import { usePayOrderMutation } from "../slices/ordersApiSlice";
+import { useSearchParams } from "react-router-dom";
 
 const SuccessPage = () => {
+  const [searchParams] = useSearchParams();
+  const order_id = searchParams.get("order_id");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(clearCartItems());
+  }, [dispatch]);
+
+  const [payOrder, { data, isLoading, error }] = usePayOrderMutation();
+
+  useEffect(() => {
+    if (order_id) {
+      payOrder({ order_id });
+      dispatch(clearCartItems());
+    }
+  }, [order_id, payOrder, dispatch]);
+
   const styles = {
     container: {
       minHeight: "100vh",
