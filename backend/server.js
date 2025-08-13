@@ -69,9 +69,9 @@ app.post(
         const user_name = userRows[0].name;
 
         const [result] = await db.execute(
-          `INSERT INTO transactionresult (order_id, shippingPrice, taxPrice, totalAmount)
-   VALUES (?, ?, ?, ?)`,
-          [orderId, shippingPrice, taxPrice, totalAmount]
+          `INSERT INTO transactionresult (order_id, shippingPrice, taxPrice, totalAmount, isPaid)
+   VALUES (?, ?, ?, ?,?)`,
+          [orderId, shippingPrice, taxPrice, totalAmount, true]
         );
 
         const transactionId = result.insertId;

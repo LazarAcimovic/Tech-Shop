@@ -25,7 +25,8 @@ const OrderListScreen = () => {
               className={i === selectedIndex ? "selected" : ""}
               onClick={() => showTransactionDetails(i)}
             >
-              Order ID: {order.order_id} — Total: ${order.totalAmount}
+              Order ID: {order.order_id} —{" "}
+              {order.isPaid ? "Successfully paid" : `$${order.totalAmount}`}
             </li>
           ))}
         </ul>
@@ -46,6 +47,10 @@ const OrderListScreen = () => {
         </p>
         <p>
           <strong>Total Amount:</strong> ${orders[selectedIndex]?.totalAmount}
+        </p>
+        <p>
+          <strong>Created At:</strong>{" "}
+          {new Date(orders[selectedIndex]?.created_at).toLocaleString()}
         </p>
 
         <h3>Items:</h3>

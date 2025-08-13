@@ -230,7 +230,31 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/:id/deliver
 // @access  Private/Admin
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
-  res.send("update order to delivered");
+  const orderId = req.params.id;
+
+  // Provera da li order postoji
+  const [rows] = await db.execute("SELECT * FROM orders WHERE order_id = ?", [
+    orderId,
+  ]);
+
+  if (rows.length === 0) {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+
+  // Ažuriranje ordera
+  await db.execute(
+    "UPDATE orders SET is_delivered = ?, delivered_at = ? WHERE order_id = ?",
+    [true, new Date(), orderId]
+  );
+
+  // Ponovo dohvatimo ažurirani red
+  const [updatedRows] = await db.execute(
+    "SELECT * FROM orders WHERE order_id = ?",
+    [orderId]
+  );
+
+  res.json(updatedRows[0]);
 });
 
 // @desc    Get all orders
@@ -238,14 +262,13 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
   const [transactions] = await db.execute(`
-    SELECT tr.id as transaction_id, tr.order_id, tr.shippingPrice, tr.taxPrice, tr.totalAmount, tr.created_at,
+    SELECT tr.id as transaction_id, tr.order_id, tr.shippingPrice, tr.taxPrice, tr.totalAmount, tr.isPaid, tr.created_at,
            ti.id as item_id, ti.product_name, ti.user_name, ti.qty, ti.price
     FROM TransactionResult tr
     JOIN TransactionItems ti ON tr.id = ti.transaction_id
     ORDER BY tr.created_at DESC
   `);
 
-  // grupisanje po transaction_id
   const grouped = {};
   transactions.forEach((row) => {
     if (!grouped[row.transaction_id]) {
@@ -254,6 +277,7 @@ const getOrders = asyncHandler(async (req, res) => {
         shippingPrice: row.shippingPrice,
         taxPrice: row.taxPrice,
         totalAmount: row.totalAmount,
+        isPaid: row.isPaid, // dodato
         created_at: row.created_at,
         items: [],
       };
