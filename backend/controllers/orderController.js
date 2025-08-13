@@ -126,12 +126,12 @@ const addOrderItems = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get logged in user orders
-// @route   GET /api/orders/myorders
+// @route   GET /api/orders/mine
 // @access  Private
 
 const getMyOrders = asyncHandler(async (req, res) => {
   const [orders] = await db.execute("SELECT * FROM orders WHERE user_id = ?", [
-    req.user._id,
+    req.user.user_id,
   ]);
 
   res.status(200).json(orders);
@@ -145,7 +145,7 @@ const getOrderById = asyncHandler(async (req, res) => {
   const [orderRows] = await db.execute(
     `SELECT o.*, u.name, u.email
      FROM Orders o
-     JOIN User u ON o.user_id = u.user_id
+     JOIN _user u ON o.user_id = u.user_id
      WHERE o.order_id = ?`,
     [req.params.id]
   );
@@ -237,7 +237,37 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  res.json("get all orders");
+  const [transactions] = await db.execute(`
+    SELECT tr.id as transaction_id, tr.order_id, tr.shippingPrice, tr.taxPrice, tr.totalAmount, tr.created_at,
+           ti.id as item_id, ti.product_name, ti.user_name, ti.qty, ti.price
+    FROM TransactionResult tr
+    JOIN TransactionItems ti ON tr.id = ti.transaction_id
+    ORDER BY tr.created_at DESC
+  `);
+
+  // grupisanje po transaction_id
+  const grouped = {};
+  transactions.forEach((row) => {
+    if (!grouped[row.transaction_id]) {
+      grouped[row.transaction_id] = {
+        order_id: row.order_id,
+        shippingPrice: row.shippingPrice,
+        taxPrice: row.taxPrice,
+        totalAmount: row.totalAmount,
+        created_at: row.created_at,
+        items: [],
+      };
+    }
+    grouped[row.transaction_id].items.push({
+      id: row.item_id,
+      name: row.product_name,
+      user_name: row.user_name,
+      qty: row.qty,
+      price: row.price,
+    });
+  });
+
+  res.json(Object.values(grouped));
 });
 
 export {

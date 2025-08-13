@@ -27,7 +27,7 @@ const ProfileScreen = () => {
   useEffect(() => {
     setName(userInfo.name);
     setEmail(userInfo.email);
-  }, [userInfo.email, userInfo.name]);
+  }, [userInfo, userInfo.email, userInfo.name]);
 
   const dispatch = useDispatch();
   const submitHandler = async (e) => {
@@ -42,9 +42,11 @@ const ProfileScreen = () => {
           name,
           email,
           password,
-        });
+        }).unwrap();
+        dispatch(setCredentials(res));
+        toast.success("Profile updated successfully");
       } catch (error) {
-        //
+        toast.error(error?.data?.message || error.error);
       }
     }
   };
@@ -123,20 +125,20 @@ const ProfileScreen = () => {
             </thead>
             <tbody>
               {orders.map((order) => (
-                <tr key={order._id}>
-                  <td>{order._id}</td>
-                  <td>{order.createdAt.substring(0, 10)}</td>
-                  <td>{order.totalPrice}</td>
+                <tr key={order.order_id}>
+                  <td>{order.order_id}</td>
+                  <td>{order.created_at.substring(0, 10)}</td>
+                  <td>{order.total_price}$</td>
                   <td>
-                    {order.isPaid ? (
-                      order.paidAt.substring(0, 10)
+                    {order.is_paid ? (
+                      order.paid_at.substring(0, 10)
                     ) : (
                       <FaTimes style={{ color: "red" }} />
                     )}
                   </td>
                   <td>
-                    {order.isDelivered ? (
-                      order.deliveredAt.substring(0, 10)
+                    {order.is_delivered ? (
+                      order.delivered_at.substring(0, 10)
                     ) : (
                       <FaTimes style={{ color: "red" }} />
                     )}
@@ -144,7 +146,7 @@ const ProfileScreen = () => {
                   <td>
                     <Button
                       as={Link}
-                      to={`/order/${order._id}`}
+                      to={`/order/${order.order_id}`}
                       className="btn-sm"
                       variant="light"
                     >
