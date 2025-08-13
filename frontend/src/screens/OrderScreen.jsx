@@ -42,7 +42,7 @@ const OrderScreen = () => {
     });
 
     const session = await response.json();
-    console.log(session);
+    // console.log(session);
 
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,

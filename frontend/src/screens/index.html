@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Transactions List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+        background: #f9f9f9;
+        color: #333;
+        display: flex;
+        gap: 30px;
+      }
+      #orders-list {
+        width: 300px;
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+      }
+      #orders-list h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #007bff;
+      }
+      #orders-list ul {
+        list-style: none;
+        padding-left: 0;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      #orders-list li {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      #orders-list li:hover {
+        background: #e6f0ff;
+      }
+      #orders-list li.selected {
+        background: #cce0ff;
+        font-weight: bold;
+      }
+      #details {
+        flex-grow: 1;
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        max-height: 450px;
+        overflow-y: auto;
+      }
+      #details h2 {
+        margin-top: 0;
+        color: #007bff;
+      }
+      #details ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      #details li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="orders-list">
+      <h3>Orders</h3>
+      <ul id="orders-ul"></ul>
+    </div>
+
+    <div id="details">
+      <h2>Transaction Details</h2>
+      <p><strong>Order ID:</strong> <span id="order-id"></span></p>
+      <p><strong>Shipping Price:</strong> $<span id="shipping-price"></span></p>
+      <p><strong>Tax Price:</strong> $<span id="tax-price"></span></p>
+      <p><strong>Total Amount:</strong> $<span id="total-amount"></span></p>
+
+      <h3>Items:</h3>
+      <ul id="items-list"></ul>
+    </div>
+
+    <script>
+      // MOCK PODACI - niz više transakcija
+      const transactions = [
+        {
+          order_id: "10001",
+          shippingPrice: "5.00",
+          taxPrice: "2.50",
+          totalAmount: "57.50",
+          items: [
+            { id: 1, name: "Product A", qty: 1, price: "50.00" },
+            { id: 2, name: "Product B", qty: 1, price: "5.00" },
+          ],
+        },
+        {
+          order_id: "10002",
+          shippingPrice: "10.00",
+          taxPrice: "5.00",
+          totalAmount: "120.00",
+          items: [
+            { id: 3, name: "Product C", qty: 2, price: "50.00" },
+            { id: 4, name: "Product D", qty: 1, price: "50.00" },
+          ],
+        },
+        {
+          order_id: "10003",
+          shippingPrice: "0.00",
+          taxPrice: "0.00",
+          totalAmount: "20.00",
+          items: [{ id: 5, name: "Product E", qty: 1, price: "20.00" }],
+        },
+      ];
+
+      const ordersUl = document.getElementById("orders-ul");
+      const orderIdElem = document.getElementById("order-id");
+      const shippingPriceElem = document.getElementById("shipping-price");
+      const taxPriceElem = document.getElementById("tax-price");
+      const totalAmountElem = document.getElementById("total-amount");
+      const itemsListElem = document.getElementById("items-list");
+
+      let selectedIndex = null;
+
+      // Funkcija za prikaz detalja transakcije
+      function showTransactionDetails(index) {
+        const transaction = transactions[index];
+        orderIdElem.textContent = transaction.order_id;
+        shippingPriceElem.textContent = transaction.shippingPrice;
+        taxPriceElem.textContent = transaction.taxPrice;
+        totalAmountElem.textContent = transaction.totalAmount;
+
+        itemsListElem.innerHTML = ""; // isprazni prethodni spisak
+        transaction.items.forEach((item) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${item.name}</strong> - Qty: ${item.qty} - Price: $${item.price}`;
+          itemsListElem.appendChild(li);
+        });
+
+        // Highlight selektovani order u listi
+        if (selectedIndex !== null) {
+          ordersUl.children[selectedIndex].classList.remove("selected");
+        }
+        ordersUl.children[index].classList.add("selected");
+        selectedIndex = index;
+      }
+
+      // Popuni listu ordera
+      transactions.forEach((tx, i) => {
+        const li = document.createElement("li");
+        li.textContent = `Order ID: ${tx.order_id} — Total: $${tx.totalAmount}`;
+        li.addEventListener("click", () => showTransactionDetails(i));
+        ordersUl.appendChild(li);
+      });
+
+      // Prikaži prvi order po defaultu
+      if (transactions.length > 0) {
+        showTransactionDetails(0);
+      }
+    </script>
+  </body>
+</html>

@@ -11,7 +11,11 @@ export default defineConfig({
         changeOrigin: true,
       },
       "/create-checkout-session": {
-        target: "http://localhost:5000", // gde ti je backend
+        target: "http://localhost:5000",
+        changeOrigin: true,
+      },
+      "/my-webhook": {
+        target: "http://localhost:5000",
         changeOrigin: true,
       },
     },
