@@ -20,14 +20,14 @@ const OrderScreen = () => {
     error,
   } = useGetOrderDetailsQuery(order_id);
 
-  console.log(order);
+  // console.log(order);
 
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart);
-  // console.log(cartItems);
+  console.log(cartItems);
 
   const dispatch = useDispatch();
 

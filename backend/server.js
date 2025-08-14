@@ -49,7 +49,7 @@ app.post(
 
       try {
         const [orderItems] = await db.execute(
-          `SELECT name, price, qty FROM orderitem WHERE order_id = ?`,
+          `SELECT product_id, name, price, qty FROM orderitem WHERE order_id = ?`,
           [orderId]
         );
 
@@ -86,6 +86,13 @@ app.post(
             `INSERT INTO transactionitems (transaction_id, product_name, user_name, qty, price)
      VALUES (?, ?, ?, ?, ?)`,
             [transactionId, item.name, user_name, item.qty, item.price]
+          );
+
+          await db.execute(
+            `UPDATE product
+         SET count_in_stock = count_in_stock - ?
+         WHERE product_id = ? `,
+            [item.qty, item.product_id]
           );
         }
 
