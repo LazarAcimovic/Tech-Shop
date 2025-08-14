@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -7,8 +8,8 @@ import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
-import path from "path";
 import { db } from "./routes/productRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 import Stripe from "stripe";
 
@@ -18,6 +19,10 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+const __dirname = path.resolve(); //root putanja do projekta
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.post(
   "/my-webhook",
@@ -116,8 +121,8 @@ app.post(
 //body parser middleware
 app.use(express.json()); //samo za raw json
 app.use(express.urlencoded({ extended: true }));
-const __dirname = path.resolve(); //root putanja do projekta
-app.use(express.static(path.join(__dirname, "public"))); //služi sve fajlove iz public foldera kao statičke fajlove
+
+//služi sve fajlove iz public foldera kao statičke fajlove
 //cookie parser middleware
 app.use(cookieParser());
 
@@ -133,6 +138,7 @@ app.use(cookieParser());
     app.use("/api/products", productRoutes);
     app.use("/api/users", userRoutes);
     app.use("/api/orders", orderRoutes);
+    app.use("/api/upload", uploadRoutes);
 
     app.post("/create-checkout-session", async (req, res) => {
       // const { products, order_id, taxPrice, shippingPrice } = req.body;

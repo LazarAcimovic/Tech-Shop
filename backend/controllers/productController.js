@@ -5,10 +5,34 @@ import asyncHandler from "../middleware/asyncHandler.js";
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const [products] = await db.execute("SELECT * FROM product");
-  res.json(products);
-});
+  const pageSize = 8;
+  const page = Number(req.query.pageNumber) || 1;
+  const keyword = req.query.keyword || "";
 
+  // Prvo brojimo koliko proizvoda odgovara search-u
+  const [countResult] = await db.execute(
+    `SELECT COUNT(*) as count 
+     FROM Product 
+     WHERE name LIKE ?`,
+    [`%${keyword}%`]
+  );
+  const count = countResult[0].count;
+
+  // Zatim dohvatimo proizvode sa limit i offset
+  const [products] = await db.execute(
+    `SELECT * 
+     FROM Product 
+     WHERE name LIKE ? 
+     LIMIT ? OFFSET ?`,
+    [`%${keyword}%`, pageSize, pageSize * (page - 1)]
+  );
+
+  res.json({
+    products,
+    page,
+    pages: Math.ceil(count / pageSize),
+  });
+});
 // @desc    Fetch single product
 // @route   GET /api/products/:id
 // @access  Public
@@ -41,6 +65,7 @@ const getProductById = asyncHandler(async (req, res) => {
     description: productData.description,
     price: productData.price,
     image: productData.image,
+    category: productData.category,
     count_in_stock: productData.count_in_stock,
     num_reviews: productData.num_reviews,
     rating: productData.rating,
@@ -113,4 +138,116 @@ const createProductReview = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Review added" });
 });
 
-export { getProducts, getProductById, createProductReview };
+// @desc    Create a product
+// @route   POST /api/products
+// @access  Private/Admin
+const createProduct = asyncHandler(async (req, res) => {
+  // Ubacujemo "sample" proizvod u bazu
+  const [result] = await db.execute(
+    `
+    INSERT INTO product 
+      (name, price, user_id, image, brand, category, count_in_stock, num_reviews, description) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      "Sample name",
+      0,
+      req.user.user_id, // ili req.user.user_id, zavisi od middleware-a
+      "/images/sample.jpg",
+      "Sample brand",
+      "Sample category",
+      0,
+      0,
+      "Sample description",
+    ]
+  );
+
+  // Dohvatimo tek kreirani proizvod
+  const [rows] = await db.execute(
+    `SELECT * FROM product WHERE product_id = ?`,
+    [result.insertId]
+  );
+
+  res.status(201).json(rows[0]);
+});
+
+// @desc    Update a product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+const updateProduct = asyncHandler(async (req, res) => {
+  const { name, price, description, image, brand, category, countInStock } =
+    req.body;
+
+  // console.log(name, price, description, image, brand, category, countInStock);
+
+  const [rows] = await db.execute(
+    `SELECT * FROM product WHERE product_id = ?`,
+    [req.params.product_id]
+  );
+
+  console.log(req.params.product_id);
+
+  if (rows.length === 0) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  // Ažuriramo proizvod
+  await db.execute(
+    `
+    UPDATE product 
+    SET name = ?, price = ?, description = ?, image = ?, brand = ?, category = ?, count_in_stock = ? 
+    WHERE product_id = ?
+    `,
+    [
+      name,
+      price,
+      description,
+      image,
+      brand,
+      category,
+      countInStock,
+      req.params.product_id,
+    ]
+  );
+
+  // Dohvatimo ažurirani proizvod
+  const [updatedRows] = await db.execute(
+    `SELECT * FROM product WHERE product_id = ?`,
+    [req.params.product_id]
+  );
+
+  res.json(updatedRows[0]);
+});
+
+// @desc    Delete a product
+// @route   DELETE /api/products/:id
+// @access  Private/Admin
+const deleteProduct = asyncHandler(async (req, res) => {
+  const productId = req.params.product_id;
+
+  // Proverimo da li proizvod postoji
+  const [rows] = await db.execute(
+    "SELECT * FROM product WHERE product_id = ?",
+    [productId]
+  );
+
+  if (rows.length > 0) {
+    // Brišemo proizvod
+    await db.execute("DELETE FROM product WHERE product_id = ?", [productId]);
+    refetch();
+    res.json({ message: "Product removed" });
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
+export {
+  getProducts,
+  getProductById,
+  createProductReview,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+};

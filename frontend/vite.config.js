@@ -18,6 +18,11 @@ export default defineConfig({
         target: "http://localhost:5000",
         changeOrigin: true,
       },
+      "/uploads": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/uploads/, "/uploads"), //preusmerava sve zahteve na 5000
+      },
     },
   },
 });

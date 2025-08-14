@@ -262,10 +262,22 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
   const [transactions] = await db.execute(`
-    SELECT tr.id as transaction_id, tr.order_id, tr.shippingPrice, tr.taxPrice, tr.totalAmount, tr.isPaid, tr.created_at,
-           ti.id as item_id, ti.product_name, ti.user_name, ti.qty, ti.price
+    SELECT 
+      tr.id AS transaction_id,
+      tr.order_id,
+      tr.shippingPrice,
+      tr.taxPrice,
+      tr.totalAmount,
+      tr.created_at,
+      u.name AS user_name,
+      ti.id AS item_id,
+      ti.product_name,
+      ti.qty,
+      ti.price
     FROM TransactionResult tr
     JOIN TransactionItems ti ON tr.id = ti.transaction_id
+    JOIN Orders o ON tr.order_id = o.order_id
+    JOIN _User u ON o.user_id = u.user_id
     ORDER BY tr.created_at DESC
   `);
 
@@ -277,7 +289,6 @@ const getOrders = asyncHandler(async (req, res) => {
         shippingPrice: row.shippingPrice,
         taxPrice: row.taxPrice,
         totalAmount: row.totalAmount,
-        isPaid: row.isPaid, // dodato
         created_at: row.created_at,
         items: [],
       };
@@ -285,7 +296,7 @@ const getOrders = asyncHandler(async (req, res) => {
     grouped[row.transaction_id].items.push({
       id: row.item_id,
       name: row.product_name,
-      user_name: row.user_name,
+      user_name: row.user_name, // ažurirano ime korisnika iz _User
       qty: row.qty,
       price: row.price,
     });

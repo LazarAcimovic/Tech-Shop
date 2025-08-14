@@ -203,27 +203,86 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  res.send("get users");
+  const [users] = await db.execute("SELECT * FROM _user");
+  res.status(200).json(users);
 });
 
 // @desc    Delete user
 // @route   DELETE /api/users/:id
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res) => {
-  res.send("delete user");
+  // Prvo proveravamo da li korisnik postoji
+  const [rows] = await db.execute("SELECT * FROM _user WHERE user_id = ?", [
+    req.params.id,
+  ]);
+
+  if (rows.length > 0) {
+    const user = rows[0];
+
+    if (user.is_admin) {
+      res.status(400);
+      throw new Error("Cannot delete admin user");
+    }
+
+    await db.execute("DELETE FROM _user WHERE user_id = ?", [req.params.id]);
+
+    res.status(200).json({ message: "User removed" });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
 });
 
 // @desc    Get user by ID
 // @route   GET /api/users/:id
 // @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-  res.send("get user by id");
+  const [rows] = await db.execute(
+    "SELECT user_id, name, email, is_admin FROM _user WHERE user_id = ?",
+    [req.params.id]
+  );
+
+  if (rows.length > 0) {
+    res.status(200).json(rows[0]);
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
 });
 // @desc    Update user
 // @route   PUT /api/users/:id
 // @access  Private/Admin
 const updateUser = asyncHandler(async (req, res) => {
-  res.send("update user");
+  // Prvo dohvatimo korisnika iz baze
+  const [rows] = await db.execute("SELECT * FROM _user WHERE user_id = ?", [
+    req.params.id,
+  ]);
+
+  if (rows.length === 0) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  const user = rows[0];
+
+  // Postavljamo nove vrednosti (ako nisu poslati, ostaju stari podaci)
+  const name = req.body.name || user.name;
+  const email = req.body.email || user.email;
+  const is_admin = req.body.is_admin ? 1 : 0;
+
+  // Update u bazi
+  await db.execute(
+    "UPDATE _user SET name = ?, email = ?, is_admin = ? WHERE user_id = ?",
+    [name, email, is_admin, req.params.id]
+  );
+
+  // Vraćamo ažurirane podatke
+  res.json({
+    user_id: req.params.id,
+    name,
+    email,
+    is_admin,
+  });
 });
 
 export {
