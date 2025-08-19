@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +19,7 @@ const OrderScreen = () => {
     error,
   } = useGetOrderDetailsQuery(order_id);
 
-  // console.log(order);
+  // console.log(order_id);
 
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
@@ -194,9 +193,9 @@ const OrderScreen = () => {
                 </Row>
               </ListGroup.Item>
               {loadingDeliver && <Loader />}
-              {userInfo &&
-                userInfo.isAdmin &&
-                order.isPaid &&
+              {!!userInfo &&
+                !!userInfo.isAdmin &&
+                !!order.isPaid &&
                 !order.isDelivered && (
                   <ListGroup.Item>
                     <Button

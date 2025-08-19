@@ -1,6 +1,7 @@
 import { useGetOrdersQuery } from "../../slices/ordersApiSlice";
 import "../../assets/styles/custom.css";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const OrderListScreen = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
@@ -12,6 +13,8 @@ const OrderListScreen = () => {
   const showTransactionDetails = (index) => {
     setSelectedIndex(index);
   };
+
+  console.log(orders);
 
   return (
     <div className="orders-container">
@@ -26,7 +29,7 @@ const OrderListScreen = () => {
               onClick={() => showTransactionDetails(i)}
             >
               Order ID: {order.order_id} —{" "}
-              {order.isPaid ? "Successfully paid" : `$${order.totalAmount}`}
+              {order.is_paid ? "Successfully paid" : `$${order.totalAmount}`}
             </li>
           ))}
         </ul>
@@ -51,6 +54,13 @@ const OrderListScreen = () => {
         <p>
           <strong>Created At:</strong>{" "}
           {new Date(orders[selectedIndex]?.created_at).toLocaleString()}
+          <br></br>
+          <Link
+            className="btn btn-dark my-3"
+            to={`/order/${orders[selectedIndex].order_id}`}
+          >
+            Mark as delivered
+          </Link>
         </p>
 
         <h3>Items:</h3>

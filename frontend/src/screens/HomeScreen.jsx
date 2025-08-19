@@ -5,6 +5,7 @@ import Message from "../components/Message";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 import { useParams, Link } from "react-router-dom";
 import Paginate from "../components/Paginate";
+import ProductCarousel from "../components/ProductCarousel";
 import { useState, useEffect } from "react";
 
 const HomeScreen = () => {
@@ -39,12 +40,18 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
-          <div className="d-flex align-items-center mb-4">
-            <Link to="/" className="btn btn-light me-3">
-              Go back
-            </Link>
+          {keyword ? (
+            <div className="d-flex align-items-center mb-4">
+              <Link to="/" className="btn btn-light me-3">
+                Go back
+              </Link>
+            </div>
+          ) : (
+            <ProductCarousel />
+          )}
 
-            {/* Dropdown za sortiranje */}
+          {/* Dropdown za sortiranje */}
+          <div>
             <Form.Select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}

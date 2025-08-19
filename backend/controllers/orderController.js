@@ -273,7 +273,8 @@ const getOrders = asyncHandler(async (req, res) => {
       ti.id AS item_id,
       ti.product_name,
       ti.qty,
-      ti.price
+      ti.price,
+      o.is_paid
     FROM TransactionResult tr
     JOIN TransactionItems ti ON tr.id = ti.transaction_id
     JOIN Orders o ON tr.order_id = o.order_id
@@ -289,6 +290,7 @@ const getOrders = asyncHandler(async (req, res) => {
         shippingPrice: row.shippingPrice,
         taxPrice: row.taxPrice,
         totalAmount: row.totalAmount,
+        is_paid: row.is_paid,
         created_at: row.created_at,
         items: [],
       };
