@@ -33,7 +33,7 @@ const Header = () => {
   return (
     <div>
       <header>
-        <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
+        <Navbar bg="info" variant="light" expand="md" collapseOnSelect>
           <Container>
             <LinkContainer to="/">
               <Navbar.Brand>
