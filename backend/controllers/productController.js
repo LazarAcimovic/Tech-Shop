@@ -18,7 +18,6 @@ const getProducts = asyncHandler(async (req, res) => {
   );
   const count = countResult[0].count;
 
-  // Zatim dohvatimo proizvode sa limit i offset
   const [products] = await db.execute(
     `SELECT * 
      FROM Product 
@@ -69,7 +68,6 @@ const getProductById = asyncHandler(async (req, res) => {
     count_in_stock: productData.count_in_stock,
     num_reviews: productData.num_reviews,
     rating: productData.rating,
-    // ... ostala polja iz product tabele
     reviews: reviewRows.map((r) => ({
       review_id: r.review_id,
       rating: r.rating,
@@ -88,7 +86,7 @@ const getProductById = asyncHandler(async (req, res) => {
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
   const productId = req.params.id;
-  const userId = req.user.user_id; // pretpostavljam da auth middleware setuje ovo
+  const userId = req.user.user_id;
   const userName = req.user.name;
 
   // 1. Provera da li proizvod postoji
@@ -185,7 +183,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     [req.params.product_id]
   );
 
-  console.log(req.params.product_id);
+  // console.log(req.params.product_id);
 
   if (rows.length === 0) {
     res.status(404);
@@ -211,7 +209,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     ]
   );
 
-  // Dohvatimo ažurirani proizvod
   const [updatedRows] = await db.execute(
     `SELECT * FROM product WHERE product_id = ?`,
     [req.params.product_id]
@@ -254,6 +251,25 @@ const getTopProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+const deleteProductReview = asyncHandler(async (req, res) => {
+  const review_id = req.params.id;
+
+  // Proverimo da li proizvod postoji
+  const [rows] = await db.execute("SELECT * FROM review WHERE review_id = ?", [
+    review_id,
+  ]);
+
+  if (rows.length > 0) {
+    // Brišemo proizvod
+    await db.execute("DELETE FROM review WHERE review_id = ?", [review_id]);
+    refetch();
+    res.json({ message: "Review removed" });
+  } else {
+    res.status(404);
+    throw new Error("Review not found");
+  }
+});
+
 export {
   getProducts,
   getProductById,
@@ -262,4 +278,5 @@ export {
   updateProduct,
   deleteProduct,
   getTopProducts,
+  deleteProductReview,
 };

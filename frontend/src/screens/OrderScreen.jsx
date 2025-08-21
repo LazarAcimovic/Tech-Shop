@@ -33,13 +33,13 @@ const OrderScreen = () => {
   const makePayment = async () => {
     const stripe = await loadStripe(
       "pk_test_51RvEEgPXt0dvdlEFsvoxj7Xoc9jE7DXAnAtWIiIR8DbpDd7xFqYQmvXWzrJ3fei01PZiS8rqQ8odUpM2arxSuHdS00pkguqqMm"
-    );
+    ); //vraća stripe objekat na osnovu koga se otvara checkout sesija
 
     const body = {
       products: cartItems,
       order_id: order_id,
     };
-    console.log(body);
+    // console.log(body);
 
     const headers = {
       "Content-Type": "application/json",
@@ -132,12 +132,7 @@ const OrderScreen = () => {
                     <ListGroup.Item key={index}>
                       <Row>
                         <Col md={1}>
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fluid
-                            rounded
-                          />
+                          <Image src={item.image} alt={item.name} fluid />
                         </Col>
                         <Col>
                           <Link to={`/product/${item.product_id}`}>

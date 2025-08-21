@@ -16,15 +16,31 @@ import Rating from "../components/Rating";
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
+  useDeleteReviewMutation,
 } from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { addToCart } from "../slices/cartSlice";
 import { toast } from "react-toastify";
+import { FaTrash } from "react-icons/fa";
 
 const ProductScreen = () => {
   const { id: product_id } = useParams();
   // console.log(product_id);
+
+  const [deleteReview] = useDeleteReviewMutation();
+
+  const handleDelete = async (review_id) => {
+    if (window.confirm("Are you sure")) {
+      try {
+        await deleteReview(review_id);
+        toast.success("Review deleted");
+        refetch();
+      } catch (error) {
+        toast.error(error?.data?.message || error.error);
+      }
+    }
+  };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -46,6 +62,8 @@ const ProductScreen = () => {
     useCreateReviewMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+  console.log(userInfo);
+  const user_id = userInfo.user_id;
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
@@ -60,7 +78,7 @@ const ProductScreen = () => {
         product_id,
         rating,
         comment,
-      }).unwrap();
+      }).unwrap(); //mutation vraća promise, pa isti moramo da raspakujemo sa unwrap() kako bi dobili raw data
       refetch();
       toast.success("Review created successfully");
     } catch (err) {
@@ -173,10 +191,21 @@ const ProductScreen = () => {
               <ListGroup variant="flush">
                 {product.reviews.map((review) => (
                   <ListGroup.Item key={review.review_id}>
-                    <strong>{review.user_name}</strong>
-                    <Rating value={review.rating} />
-                    <p>{review.created_at.substring(0, 10)}</p>
-                    <p>{review.comment}</p>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>{review.user_name}</strong>
+                        <Rating value={review.rating} />
+                        <p>{review.created_at.substring(0, 10)}</p>
+                        <p>{review.comment}</p>
+                      </div>
+
+                      {review.user_id === user_id && (
+                        <FaTrash
+                          style={{ color: "red", cursor: "pointer" }}
+                          onClick={() => handleDelete(review.review_id)}
+                        />
+                      )}
+                    </div>
                   </ListGroup.Item>
                 ))}
                 <ListGroup.Item>

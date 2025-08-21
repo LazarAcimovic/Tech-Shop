@@ -35,7 +35,7 @@ const upload = multer({
 router.post("/", upload.single("image"), (req, res) => {
   res.send({
     message: "Image uploaded",
-    image: `/uploads/${req.file.filename}`, // ovo je prava URL putanja
+    image: `/uploads/${req.file.filename}`,
   });
 });
 

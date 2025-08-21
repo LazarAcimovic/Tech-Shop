@@ -96,24 +96,6 @@ app.post(
           );
         }
 
-        //   Ubaci svaki item u TransactionResult
-        //   for (const item of orderItems) {
-        //     await db.execute(
-        //       `INSERT INTO TransactionResult
-        //   (order_id, shippingPrice, taxPrice, totalAmount, qty, name, price)
-        //  VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        //       [
-        //         orderId,
-        //         shippingPrice,
-        //         taxPrice,
-        //         totalAmount,
-        //         item.qty,
-        //         item.name,
-        //         item.price,
-        //       ]
-        //     );
-        //   }
-
         console.log(`Transaction saved for order ${orderId}`);
       } catch (err) {
         console.error("Error saving transaction data: ", err);

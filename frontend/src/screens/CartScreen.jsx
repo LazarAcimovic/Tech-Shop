@@ -35,7 +35,14 @@ const CartScreen = () => {
   return (
     <Row>
       <Col md={8}>
-        <h1 style={{ marginBottom: "20px" }}>Shopping cart</h1>
+        <h1 style={{ marginBottom: "20px" }}>
+          <span style={{ marginRight: "10px" }}>
+            <Link className="btn btn-light my-3" to="/">
+              Go Back
+            </Link>
+          </span>
+          Shopping cart
+        </h1>
         {cartItems.length === 0 ? (
           <Message>
             Your cart is empty <Link to="/">Go back</Link>
@@ -46,7 +53,7 @@ const CartScreen = () => {
               <ListGroup.Item key={item.product_id}>
                 <Row>
                   <Col md={2}>
-                    <Image src={item.image} alt={item.name} fluid rounded />
+                    <Image src={item.image} alt={item.name} fluid />
                   </Col>
                   <Col md={3}>
                     <Link to={`/product/${item.product_id}`}>{item.name}</Link>

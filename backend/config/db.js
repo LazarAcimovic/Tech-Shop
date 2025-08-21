@@ -24,7 +24,7 @@ const connectDB = async () => {
         charset: "utf8mb4",
       });
 
-      console.log("✅ MySQL connected...");
+      console.log("MySQL connected...");
     } catch (error) {
       console.error(" Connection failed:", error.message);
       process.exit(1);

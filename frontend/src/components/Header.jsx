@@ -12,6 +12,7 @@ import { clearCartItems } from "../slices/cartSlice";
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
+  const isAdmin = !!userInfo?.isAdmin;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const Header = () => {
                 </LinkContainer>
                 {userInfo ? (
                   <NavDropdown title={userInfo.name} id="username">
-                    <LinkContainer to="/profile">
+                    <LinkContainer to={isAdmin ? "/admin/profile" : "/profile"}>
                       <NavDropdown.Item>Profile</NavDropdown.Item>
                     </LinkContainer>
                     <NavDropdown.Item onClick={logoutHandler}>
@@ -73,7 +74,7 @@ const Header = () => {
                     </Nav.Link>
                   </LinkContainer>
                 )}
-                {userInfo && userInfo.isAdmin && (
+                {isAdmin && (
                   <NavDropdown title="Admin" id="adminmenu">
                     <LinkContainer to="/admin/orderlist">
                       <NavDropdown.Item>Orders</NavDropdown.Item>

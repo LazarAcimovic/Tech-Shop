@@ -13,14 +13,6 @@ const authUser = asyncHandler(async (req, res) => {
     email,
   ]);
 
-  // const plainTextPassword = "123456";
-  // const hardcodedHash = await bcrypt.hash(plainTextPassword, 10);
-  // const isTestMatch = await bcrypt.compare(plainTextPassword, hardcodedHash);
-
-  // console.log(isTestMatch);
-
-  //   console.log(email, password);
-
   if (user.length > 0) {
     const foundUser = user[0];
     console.log(foundUser.user_id);
