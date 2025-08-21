@@ -17,16 +17,48 @@ import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
   useDeleteReviewMutation,
+  useUpdateReviewMutation,
 } from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { addToCart } from "../slices/cartSlice";
 import { toast } from "react-toastify";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaEdit } from "react-icons/fa";
 
 const ProductScreen = () => {
   const { id: product_id } = useParams();
+
+  const [updateReview] = useUpdateReviewMutation();
   // console.log(product_id);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
+  const [editedRating, setEditedRating] = useState(0);
+
+  const handleEdit = (review) => {
+    setEditingReviewId(review.review_id);
+    setEditedComment(review.comment);
+    setEditedRating(review.rating);
+  };
+
+  const handleCancel = () => {
+    setEditingReviewId(null);
+    setEditedComment("");
+    setEditedRating(0);
+  };
+
+  const handleSave = async (review_id) => {
+    try {
+      await updateReview({
+        review_id,
+        comment: editedComment,
+        rating: editedRating,
+      }).unwrap();
+      refetch(); // osveži review-e nakon promene
+      setEditingReviewId(null);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   const [deleteReview] = useDeleteReviewMutation();
 
@@ -194,16 +226,72 @@ const ProductScreen = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <div>
                         <strong>{review.user_name}</strong>
-                        <Rating value={review.rating} />
-                        <p>{review.created_at.substring(0, 10)}</p>
-                        <p>{review.comment}</p>
+
+                        {editingReviewId === review.review_id ? (
+                          <>
+                            <Form.Control
+                              as="textarea"
+                              rows={2}
+                              value={editedComment}
+                              onChange={(e) => setEditedComment(e.target.value)}
+                              className="my-1"
+                            />
+                            <Form.Control
+                              as="select"
+                              value={editedRating}
+                              onChange={(e) =>
+                                setEditedRating(Number(e.target.value))
+                              }
+                              className="my-1"
+                            >
+                              <option value={1}>1 - Poor</option>
+                              <option value={2}>2 - Fair</option>
+                              <option value={3}>3 - Good</option>
+                              <option value={4}>4 - Very Good</option>
+                              <option value={5}>5 - Excellent</option>
+                            </Form.Control>
+                          </>
+                        ) : (
+                          <>
+                            <Rating value={review.rating} />
+                            <p>{review.created_at.substring(0, 10)}</p>
+                            <p>{review.comment}</p>
+                          </>
+                        )}
                       </div>
 
                       {review.user_id === user_id && (
-                        <FaTrash
-                          style={{ color: "red", cursor: "pointer" }}
-                          onClick={() => handleDelete(review.review_id)}
-                        />
+                        <div className="d-flex gap-2">
+                          {editingReviewId === review.review_id ? (
+                            <>
+                              <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleSave(review.review_id)}
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={handleCancel}
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <FaEdit
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleEdit(review)}
+                              />
+                              <FaTrash
+                                style={{ color: "red", cursor: "pointer" }}
+                                onClick={() => handleDelete(review.review_id)}
+                              />
+                            </>
+                          )}
+                        </div>
                       )}
                     </div>
                   </ListGroup.Item>

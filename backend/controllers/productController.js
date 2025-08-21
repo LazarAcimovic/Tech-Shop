@@ -251,6 +251,9 @@ const getTopProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+// @desc    Delete product review
+// @route   DELETE /api/products/:id/reviews
+// @access  Public
 const deleteProductReview = asyncHandler(async (req, res) => {
   const review_id = req.params.id;
 
@@ -270,6 +273,43 @@ const deleteProductReview = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Update a product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+const updateProductReview = asyncHandler(async (req, res) => {
+  const { review_id, comment, rating } = req.body;
+
+  // console.log(name, price, description, image, brand, category, countInStock);
+
+  const [rows] = await db.execute(`SELECT * FROM review WHERE review_id = ?`, [
+    review_id,
+  ]);
+
+  // console.log(req.params.product_id);
+
+  if (rows.length === 0) {
+    res.status(404);
+    throw new Error("Review not found");
+  }
+
+  // Ažuriramo proizvod
+  await db.execute(
+    `
+    UPDATE review 
+    SET comment = ?, rating = ?
+    WHERE review_id = ?
+    `,
+    [comment, rating, review_id]
+  );
+
+  const [updatedRows] = await db.execute(
+    `SELECT * FROM review WHERE review_id = ?`,
+    [review_id]
+  );
+
+  res.json(updatedRows[0]);
+});
+
 export {
   getProducts,
   getProductById,
@@ -279,4 +319,5 @@ export {
   deleteProduct,
   getTopProducts,
   deleteProductReview,
+  updateProductReview,
 };
