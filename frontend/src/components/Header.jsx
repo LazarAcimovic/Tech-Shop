@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
 import SearchBox from "./SearchBox";
-import logo from "../assets/logo.png";
 import { clearCartItems } from "../slices/cartSlice";
 
 const Header = () => {
@@ -38,8 +37,18 @@ const Header = () => {
           <Container>
             <LinkContainer to="/">
               <Navbar.Brand>
-                <img src={logo} alt="Pc Shop" />
-                Tech Shop
+                <p
+                  className="mb-0"
+                  style={{
+                    color: "white",
+                    fontSize: "1.8rem",
+                    fontWeight: "bold",
+                    letterSpacing: "2px",
+                    textShadow: "2px 2px 8px rgba(0,0,0,0.6)",
+                  }}
+                >
+                  Fusion Tech
+                </p>
               </Navbar.Brand>
             </LinkContainer>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />

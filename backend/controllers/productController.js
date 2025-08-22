@@ -257,7 +257,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
 const deleteProductReview = asyncHandler(async (req, res) => {
   const review_id = req.params.id;
 
-  // Proverimo da li proizvod postoji
+  // Proverimo da li review postoji
   const [rows] = await db.execute("SELECT * FROM review WHERE review_id = ?", [
     review_id,
   ]);
