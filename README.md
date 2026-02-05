@@ -27,3 +27,7 @@ The application utilizes an asynchronous Node.js backend for efficient request h
 * **User Management**: Overview of all registered users, ability to manage administrative privileges, or remove accounts.
 * **Order Monitoring**: Full insight into all system orders with detailed delivery status tracking.
 
+* ### Screenshots
+<img width="1839" height="872" alt="image" src="https://github.com/user-attachments/assets/60a7c673-38b6-45d6-b8b4-f9bde301fdc2" />
+
+
