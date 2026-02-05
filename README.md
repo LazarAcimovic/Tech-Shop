@@ -37,7 +37,6 @@ The application utilizes an asynchronous Node.js backend for efficient request h
 <img width="1683" height="846" alt="image" src="https://github.com/user-attachments/assets/f557b5be-e711-44a8-b1c8-28f53fe1db1a" />
 <img width="1849" height="785" alt="image" src="https://github.com/user-attachments/assets/5e054e92-48a7-4a36-a1f9-6c884e7b1453" />
 <img width="1919" height="486" alt="image" src="https://github.com/user-attachments/assets/9124b479-cb44-4344-9fcc-086c8de42428" />
-<img width="1552" height="788" alt="image" src="https://github.com/user-attachments/assets/a29ce460-c954-4340-afc5-1e8f5bbceb61" />
 <img width="1904" height="796" alt="image" src="https://github.com/user-attachments/assets/45bb03d1-e0fc-4776-9dd3-7d948bbd7a7a" />
 <img width="1878" height="656" alt="image" src="https://github.com/user-attachments/assets/bf27ab26-fbb9-48d3-953a-39fff5008da2" />
 <img width="1870" height="754" alt="image" src="https://github.com/user-attachments/assets/dfd50c01-3f83-47ae-98da-085b1e88beb3" />
